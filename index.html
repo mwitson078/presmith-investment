@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Presmith Investment Roth Acc</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; font-family: Arial, sans-serif; }
+    body { background:#f8f9fa; color:#333; }
+    header { background:#003366; color:white; padding:20px; text-align:center; }
+    nav { display:flex; justify-content:center; background:#0055aa; }
+    nav a { color:white; text-decoration:none; padding:15px 25px; display:inline-block; cursor:pointer; transition:0.3s; }
+    nav a:hover { background:#003366; }
+    .hero { background:url('https://via.placeholder.com/1200x400') center/cover no-repeat; height:250px; display:flex; align-items:center; justify-content:center; color:white; font-size:2rem; text-shadow:2px 2px 4px rgba(0,0,0,0.7); }
+    .section { padding:40px 20px; max-width:1000px; margin:auto; }
+    .cards { display:flex; flex-wrap:wrap; gap:20px; justify-content:center; }
+    .card { background:white; border-radius:8px; padding:20px; box-shadow:0 2px 6px rgba(0,0,0,0.1); flex:1 1 250px; text-align:center; transition:0.3s; }
+    .card:hover { transform:translateY(-5px); box-shadow:0 4px 12px rgba(0,0,0,0.2); }
+    footer { background:#003366; color:white; text-align:center; padding:20px; margin-top:50px; }
+
+    /* Login */
+    #loginForm { max-width:400px; margin:40px auto; background:white; padding:30px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.2); }
+    #loginForm h2 { text-align:center; margin-bottom:20px; }
+    #loginForm input { width:100%; padding:10px; margin:10px 0; border-radius:5px; border:1px solid #ccc; }
+    #loginForm button { width:100%; padding:10px; background:#003366; color:white; border:none; border-radius:5px; cursor:pointer; font-size:1rem; }
+    #loginForm button:hover { background:#0055aa; }
+
+    /* Dashboard */
+    #dashboard { display:none; max-width:1000px; margin:40px auto; text-align:center; }
+    #assets { font-size:2rem; margin:20px 0; }
+    #dashboard button { padding:10px 20px; margin:10px; font-size:1rem; border-radius:5px; border:none; cursor:pointer; background:#0055aa; color:white; }
+    #dashboard button:hover { background:#003366; }
+
+    /* Inbox */
+    #inbox { margin-top:30px; text-align:left; }
+    #inbox h3 { margin-bottom:10px; }
+    .inbox-item { background:#e6f0ff; padding:10px; margin:5px 0; border-radius:5px; display:flex; justify-content:space-between; align-items:center; }
+    .inbox-item button { margin-left:10px; padding:5px 10px; border:none; border-radius:5px; cursor:pointer; }
+    .approve { background:#28a745; color:white; }
+    .reject { background:#dc3545; color:white; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Presmith Investment Roth Acc</h1>
+</header>
+
+<nav>
+  <a onclick="showSection('about')">About</a>
+  <a onclick="showSection('services')">Services</a>
+  <a onclick="showSection('contact')">Contact</a>
+  <a onclick="showDashboard()">Dashboard</a>
+</nav>
+
+<div class="hero">
+  Your Trusted Financial Partner
+</div>
+
+<section id="about" class="section">
+  <h2>About Us</h2>
+  <p>Presmith Investment Roth Acc provides secure and reliable financial solutions worldwide. We aim to help you grow and protect your wealth with trusted guidance.</p>
+</section>
+
+<section id="services" class="section">
+  <h2>Our Services</h2>
+  <div class="cards">
+    <div class="card">
+      <h3>Investment Management</h3>
+      <p>Portfolio strategies for long-term growth.</p>
+    </div>
+    <div class="card">
+      <h3>Financial Advisory</h3>
+      <p>Expert advice tailored to your goals.</p>
+    </div>
+    <div class="card">
+      <h3>Global Trust Services</h3>
+      <p>Secure international banking solutions.</p>
+    </div>
+  </div>
+</section>
+
+<section id="contact" class="section">
+  <h2>Contact Us</h2>
+  <p>Email: info@presmith.com | Phone: +1 (800) 000-0000</p>
+  <p>Address: 123 Finance Street, New York, NY</p>
+</section>
+
+<div id="loginForm">
+  <h2>Login</h2>
+  <input type="text" id="username" placeholder="Username" required>
+  <input type="password" id="password" placeholder="Password" required>
+  <button onclick="login()">Login</button>
+</div>
+
+<div id="dashboard">
+  <h2>Welcome, <span id="userDisplay"></span></h2>
+  <p>Your Assets:</p>
+  <div id="assets">$0</div>
+
+  <div id="assetActions" style="display:none;">
+    <button onclick="requestAssetIncrease(1000)">Request +$1,000</button>
+    <button onclick="requestAssetIncrease(5000)">Request +$5,000</button>
+  </div>
+
+  <div id="inbox">
+    <h3>Inbox / Pending Requests</h3>
+    <div id="inboxList"></div>
+  </div>
+
+  <button onclick="logout()">Logout</button>
+</div>
+
+<footer>
+  &copy; 2026 Presmith Investment Roth Acc. All rights reserved.
+</footer>
+
+<script>
+  // Preloaded users
+  const users = [
+    { username:'admin', password:'admin123', role:'admin', assets:1000000 },
+    { username:'user1', password:'user123', role:'user', assets:200000 },
+    { username:'user2', password:'user456', role:'user', assets:600000 }
+  ];
+
+  let currentUser = null;
+  let pendingRequests = JSON.parse(localStorage.getItem('pendingRequests')) || [];
+
+  function savePendingRequests() {
+    localStorage.setItem('pendingRequests', JSON.stringify(pendingRequests));
+  }
+
+  function showSection(id) {
+    document.getElementById('about').style.display='none';
+    document.getElementById('services').style.display='none';
+    document.getElementById('contact').style.display='none';
+    document.getElementById('loginForm').style.display='none';
+    document.getElementById('dashboard').style.display='none';
+    document.getElementById(id).style.display='block';
+  }
+
+  function login() {
+    const username=document.getElementById('username').value;
+    const password=document.getElementById('password').value;
+    const user=users.find(u=>u.username===username && u.password===password);
+    if(!user){ alert('Invalid username or password'); return; }
+    currentUser=user;
+    document.getElementById('loginForm').style.display='none';
+    document.getElementById('dashboard').style.display='block';
+    document.getElementById('userDisplay').innerText=currentUser.username;
+    updateDashboard();
+  }
+
+  function updateDashboard() {
+    document.getElementById('assets').innerText='$'+currentUser.assets.toLocaleString();
+    // Show asset request buttons only for users (not admin)
+    if(currentUser.role==='user'){
+      document.getElementById('assetActions').style.display='block';
+    } else {
+      document.getElementById('assetActions').style.display='none';
+    }
+    renderInbox();
+  }
+
+  function requestAssetIncrease(amount){
+    if(currentUser.assets<500000){
+      alert('Request denied — minimum token balance of $500,000 required.');
+      return;
+    }
+    const request={username:currentUser.username, amount:amount};
+    pendingRequests.push(request);
+    savePendingRequests();
+    alert('Request submitted for admin approval
